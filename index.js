@@ -60,7 +60,13 @@ app.use((err, req, res, next) => {
 
 app.use(bodyParser.json());
 
-const todos = [];
+const todos = [
+    {
+        id: 1,
+        todo: 'Estudiar lodash',
+        completed: false
+    }
+];
 
 // GET
 app.get('/todos', (req, res) => {
@@ -70,18 +76,18 @@ app.get('/todos', (req, res) => {
 // Middleware evalua si existe ya un ID igual
 const evaluaExistente = (req, res, next) => {
     const id = req.body.id;
-    let sigue = true;
     // Verifico que no exista ya un item con el mismo id
-    todos.forEach(item => {
-        if (item.id == id) {
-            sigue = false;
-            return res.status(400).send(`Item con id: ${id}, ya existe`);
+    // Filter always returs array.
+    const todoExiste = todos.find(item => {
+        if (item.id === Number(id)) {
+            return item;
         } 
     });
-
-    if (sigue) {
+    
+    if(!todoExiste) {
         next();
     }
+    return res.status(400).send(`Item con id: ${id}, ya existe`);
 }
 
 // POST
